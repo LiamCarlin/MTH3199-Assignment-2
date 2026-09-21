@@ -47,5 +47,30 @@ function [x, exit_flag] = multi_newton_solver(fun,x_guess,solver_params)
         numerical_diff = solver_params.numerical_diff;
     end
 
-    %your code here
+        x = x0;
+    for i = 1:max_iter
+        [fval, dfdx] = fun(x);
+
+        if abs(fval) < ftol
+            exit_flag = 1;
+            return
+        end
+
+        x_new = x - fval / dfdx;
+
+        if abs(x_new - x) > dxmax
+            exit_flag = 0;
+            return
+        end
+
+        if abs(x_new - x) < dxtol
+            x = x_new;
+            exit_flag = 2;
+            return
+        end
+
+        x = x_new;
+    end
+    exit_flag = -1;
+    disp("Did not converge within tolerance")
 end
