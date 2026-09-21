@@ -20,7 +20,7 @@
 %OUTPUTS:
 %x: the estimate of the root computed by the function
 % exit_flag: an integer indicating whether or not the solver succeeded
-function [x, exit_flag] = multi_newton_solver(fun,x_guess,solver_params)
+function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
     %unpack values from struct (if fields in struct have been set)
     dxmin = 1e-14;
     if isfield(solver_params,'dxmin')
@@ -47,25 +47,19 @@ function [x, exit_flag] = multi_newton_solver(fun,x_guess,solver_params)
         numerical_diff = solver_params.numerical_diff;
     end
 
-        x = x0;
+    x = x_guess;
     for i = 1:max_iter
-        [fval, dfdx] = fun(x);
+        [fval, J] = fun(x);
 
         if abs(fval) < ftol
             exit_flag = 1;
             return
         end
 
-        x_new = x - fval / dfdx;
+        x_new = x - fval \ J;
 
         if abs(x_new - x) > dxmax
             exit_flag = 0;
-            return
-        end
-
-        if abs(x_new - x) < dxtol
-            x = x_new;
-            exit_flag = 2;
             return
         end
 
@@ -74,3 +68,10 @@ function [x, exit_flag] = multi_newton_solver(fun,x_guess,solver_params)
     exit_flag = -1;
     disp("Did not converge within tolerance")
 end
+
+solver_params = 0;
+X = [0, 12, 2.68];
+wrapper1 = @(X) test_function01(X);
+multi_newton_solvers(wrapper1, X, solver_params)
+
+
