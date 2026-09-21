@@ -56,7 +56,7 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
             return
         end
 
-        x_new = x - fval \ J;
+        x_new = x - (J \ fval);
 
         if abs(x_new - x) > dxmax
             exit_flag = 0;
@@ -69,9 +69,11 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
     disp("Did not converge within tolerance")
 end
 
-solver_params = 0;
+solver_params = struct();
 X = [0, 12, 2.68];
 wrapper1 = @(X) test_function01(X);
+[X, exit_flag] = multi_newton_solvers(wrapper1, X, solver_params)
+
 multi_newton_solvers(wrapper1, X, solver_params)
 
 
