@@ -1,0 +1,7 @@
+%the function name and input/output variable names
+%are just what I chose, you can use whatever names you'd like
+function [f_val,J] = test_function01(X)
+    x1 = X(1); x2 = X(2); x3 = X(3);
+    f_val = [x1^2 + x2^2 - 6 - x3^5; x1*x3 + x2 - 12; sin(x1+x2+x3)];
+    J = f_val \ X;
+end
