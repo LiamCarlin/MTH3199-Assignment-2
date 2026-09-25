@@ -26,30 +26,42 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
     if isfield(solver_params,'dxmin')
         dxmin = solver_params.dxmin;
     end
-
     ftol = 1e-14;
     if isfield(solver_params,'ftol')
         ftol = solver_params.ftol;
     end
-
     max_iter = 200;
     if isfield(solver_params,'max_iter')
         max_iter = solver_params.max_iter;
     end
-
     dxmax = 1e8;
     if isfield(solver_params,'dxmax')
         dxmax = solver_params.dxmax;
     end
-
     numerical_diff = 1;
     if isfield(solver_params,'numerical_diff')
         numerical_diff = solver_params.numerical_diff;
     end
+    
+
+    count = 0;
+    if numerical_diff
+        [fval,J] = fun(x0);
+    else
+        fval = fun(x0)
+    end
+    
+    dx = 2*dxtol;
 
     x = x_guess;
-    for i = 1:max_iter
-        [fval, J] = fun(x);
+     while count<max_iter && norm(fval)>=ftol && abs(dx)>=dxtol
+        if numerical_diff
+            [fval, J] = fun(x);
+
+        else
+            fval = fun(x);
+            J = approximate_jacobian(fun, x);
+        end
 
         if abs(fval) < ftol
             exit_flag = 1;
@@ -70,8 +82,10 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
 end
 
 solver_params = struct();
-X = [0, 12, 2.68];
+X = [0; 12; 2.68];
 wrapper1 = @(X) test_function01(X);
-[X, exit_flag]multi_newton_solvers(wrapper1, X, solver_params)
+[X, exit_flag] = multi_newton_solvers(wrapper1, X, solver_params);
+
+[f_val, ~] = test_function01(X);
 
 

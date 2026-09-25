@@ -26,54 +26,81 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
     if isfield(solver_params,'dxmin')
         dxmin = solver_params.dxmin;
     end
-
-    ftol = 1e-14;
+    ftol = 1e-12;
     if isfield(solver_params,'ftol')
         ftol = solver_params.ftol;
     end
-
     max_iter = 200;
     if isfield(solver_params,'max_iter')
         max_iter = solver_params.max_iter;
     end
-
     dxmax = 1e8;
     if isfield(solver_params,'dxmax')
         dxmax = solver_params.dxmax;
     end
-
     numerical_diff = 1;
     if isfield(solver_params,'numerical_diff')
         numerical_diff = solver_params.numerical_diff;
     end
+    
 
-    x = x_guess;
-    for i = 1:max_iter
+    count = 0;
+    x = x_guess(:);
+
+for count = 1:max_iter
+    if numerical_diff
+        fval = fun(x);
+        J = approximate_jacobian(fun, x);
+    else
         [fval, J] = fun(x);
-
-        if abs(fval) < ftol
-            exit_flag = 1;
-            return
-        end
-
-        x_new = x - (J \ fval);
-
-        if abs(x_new - x) > dxmax
-            exit_flag = 0;
-            return
-        end
-
-        x = x_new;
     end
-    exit_flag = -1;
-    disp("Did not converge within tolerance")
+
+    if norm(fval) < ftol
+        exit_flag = 1;
+        return
+    end
+
+    if abs(det(J*J')) <= dxmin
+        exit_flag = 0;
+        return
+    end
+
+    dx = -(J \ fval);
+
+    if norm(dx) > dxmax
+        exit_flag = 0;
+        return
+    end
+
+    x = x + dx;
+
+    if norm(dx) < dxmin
+        fval = fun(x); 
+        exit_flag = double(norm(fval) < ftol);
+        return
+    end
 end
 
-solver_params = struct();
-X = [0, 12, 2.68];
-wrapper1 = @(X) test_function01(X);
-[X, exit_flag] = multi_newton_solvers(wrapper1, X, solver_params)
+exit_flag = -1;
+end
 
-multi_newton_solvers(wrapper1, X, solver_params)
+params = struct();
+params.numerical_diff = 1;  % wrapper returns F only; approximate its Jacobian
 
+X0 = [0.7; 2.0];            % guesses for [theta; collision time]
+[X, exit_flag] = multi_newton_solvers(@collision_wrapper, X0, params);
 
+theta = X(1);
+t_c = X(2);
+
+% disp(X)
+% disp(collision_wrapper(X))  % Both position differences should be near zero
+% disp(exit_flag)
+
+format long g
+disp([theta, t_c])
+disp(collision_wrapper([theta; t_c]))
+
+projectile_simulation(theta, t_c);
+
+%projectile_simulation(pi/8, 10)
