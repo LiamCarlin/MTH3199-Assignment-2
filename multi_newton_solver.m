@@ -42,9 +42,7 @@ function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
     if isfield(solver_params,'numerical_diff')
         numerical_diff = solver_params.numerical_diff;
     end
-    
-
-    count = 0;
+   
     x = x_guess(:);
 
 for count = 1:max_iter
@@ -85,22 +83,10 @@ exit_flag = -1;
 end
 
 params = struct();
-params.numerical_diff = 1;  % wrapper returns F only; approximate its Jacobian
+params.numerical_diff = 1;
 
-X0 = [0.7; 2.0];            % guesses for [theta; collision time]
+X0 = [1; 3.0];    
 [X, exit_flag] = multi_newton_solvers(@collision_wrapper, X0, params);
-
 theta = X(1);
 t_c = X(2);
-
-% disp(X)
-% disp(collision_wrapper(X))  % Both position differences should be near zero
-% disp(exit_flag)
-
-format long g
-disp([theta, t_c])
-disp(collision_wrapper([theta; t_c]))
-
 projectile_simulation(theta, t_c);
-
-%projectile_simulation(pi/8, 10)
