@@ -22,7 +22,7 @@ function length_errors = link_length_error_func(vertex_coords, leg_params)
     length_errors = zeros(10, 1);
     coords_out = column_to_matrix(vertex_coords);
     ltv_dim = size(leg_params.link_to_vertex_list);
-    for i = ltv_dim(1)
+    for i = 1:ltv_dim(1)
         vertex_index_1 = leg_params.link_to_vertex_list(i,1); %Gets the vertice number from the link explored in this iteration
         vertex_index_2 = leg_params.link_to_vertex_list(i,2);
         x1 = coords_out(vertex_index_1, 1); y1 = coords_out(vertex_index_1, 2); %Translates prev. vertice as index to the coords to find the vertice coords

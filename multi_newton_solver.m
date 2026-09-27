@@ -20,13 +20,13 @@
 %OUTPUTS:
 %x: the estimate of the root computed by the function
 % exit_flag: an integer indicating whether or not the solver succeeded
-function [x, exit_flag] = multi_newton_solvers(fun,x_guess,solver_params)
+function [x, exit_flag] = multi_newton_solver(fun,x_guess,solver_params)
     %unpack values from struct (if fields in struct have been set)
     dxmin = 1e-14;
     if isfield(solver_params,'dxmin')
         dxmin = solver_params.dxmin;
     end
-    ftol = 1e-12;
+    ftol = 1e-9;
     if isfield(solver_params,'ftol')
         ftol = solver_params.ftol;
     end
@@ -59,9 +59,21 @@ for count = 1:max_iter
     end
 
     if abs(det(J*J')) <= dxmin
-        exit_flag = 0;
-        return
-    end
+    fprintf('Stopped: Jacobian check at iteration %d\n', count)
+    fprintf('det(J*J'') = %.3e\n', det(J*J'))
+    fprintf('Residual norm = %.3e\n', norm(fval))
+    exit_flag = 0;
+    return
+end
+
+dx = -(J \ fval);
+
+if norm(dx) > dxmax
+    fprintf('Stopped: step too large at iteration %d\n', count)
+    fprintf('Step norm = %.3e\n', norm(dx))
+    exit_flag = 0;
+    return
+end
 
     dx = -(J \ fval);
 
@@ -77,16 +89,26 @@ for count = 1:max_iter
         exit_flag = double(norm(fval) < ftol);
         return
     end
-end
 
+    if norm(dx) < dxmin
+    fval = fun(x);
+    fprintf('Stopped: tiny step at iteration %d; residual = %.3e\n', ...
+        count, norm(fval))
+    exit_flag = double(norm(fval) < ftol);
+    return
+    end
+end
+fval = fun(x);  % Evaluate at the final coordinates
+fprintf('Final residual norm: %.3e\n', norm(fval))
+fprintf('Final step norm: %.3e\n', norm(dx))
 exit_flag = -1;
 end
 
-params = struct();
-params.numerical_diff = 1;
-
-X0 = [1; 3.0];    
-[X, exit_flag] = multi_newton_solvers(@collision_wrapper, X0, params);
-theta = X(1);
-t_c = X(2);
-projectile_simulation(theta, t_c);
+% params = struct();
+% params.numerical_diff = 1;
+% 
+% X0 = [1; 3.0];    
+% [X, exit_flag] = multi_newton_solvers(@collision_wrapper, X0, params);
+% theta = X(1);
+% t_c = X(2);
+% projectile_simulation(theta, t_c);
