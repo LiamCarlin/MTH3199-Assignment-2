@@ -7,6 +7,6 @@
 %OUTPUTS:
 %DVdt: a matrix containing the velocities for the leg tip
 function DVdt = explicit_compute_velocities(vertex_coords_guess, leg_params, theta)
-    cvc = (@theta) compute_coords(vertex_coords_guess, leg_params, theta);
+    cvc = @(theta) compute_coords(vertex_coords_guess, leg_params, theta);
     DVdt = approximate_jacobian(cvc, theta);
 end
