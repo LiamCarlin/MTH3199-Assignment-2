@@ -1,4 +1,5 @@
 function run_strandbeest()
+    close all
     vertex_coords_guess = [...
     [ 0; 50];... %vertex 1 guess
     [ -50; 0];... %vertex 2 guess
@@ -11,8 +12,8 @@ function run_strandbeest()
     
     leg_params = define_leg_parameters();
     
-    for theta = linspace(0, 360, 4)
-        vertex_roots = compute_coords(vertex_coords_guess, leg_params, theta);
+    for theta = linspace(0, 2*pi, 4)
+        vertex_roots = compute_coords(vertex_coords_guess, leg_params, theta)
         update_leg_drawing(vertex_roots, leg_params)
     end
 end
