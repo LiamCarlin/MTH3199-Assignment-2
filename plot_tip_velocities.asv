@@ -1,0 +1,39 @@
+function plot_tip_velocities()
+    leg_params = define_leg_parameters();
+    vertex_guess = [...
+    [ 0; 50];... %vertex 1 guess
+    [ -50; 0];... %vertex 2 guess
+    [ -50; 50];... %vertex 3 guess
+    [-100; 0];... %vertex 4 guess
+    [-100; -50];... %vertex 5 guess
+    [ -50; -50];... %vertex 6 guess
+    [ -50; -100]... %vertex 7 guess
+    ];
+
+    implicit_tip_x = [];
+    implicit_tip_y = [];
+    explicit_tip_x = [];
+    explicit_tip_y = [];
+    theta = linspace(0 , 2*pi, 10);
+    for thetai = theta
+        coords = compute_coords(vertex_guess, leg_params, thetai);
+        implicit_dVdtheta = implicit_compute_velocities(coords, leg_params, thetai);
+        implicit_tip_x(end+1) = implicit_dVdtheta(end-1)
+        implicit_tip_y(end+1) = implicit_dVdtheta(end)
+
+        explicit_dVdtheta = explicit_compute_velocities(vertex_guess, leg_params, thetai);
+        explicit_tip_x(end+1) = explicit_dVdtheta(end-1);
+        explicit_tip_y(end+1) = explicit_dVdtheta(end);
+        
+    end
+    figure; hold on;
+    plot(theta, implicit_tip_x, 'r--', linewidth=2)
+    plot(theta, explicit_tip_x, 'b')
+
+    figure; hold on
+    plot(theta, implicit_tip_y, 'r--')
+    plot(theta, explicit_tip_y, 'b')
+
+
+
+end
