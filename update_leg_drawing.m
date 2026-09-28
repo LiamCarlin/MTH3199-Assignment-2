@@ -8,9 +8,8 @@
 %       leg_drawing.crank is a plot of the crank link
 %       leg_drawing.vertices is a cell array, where each element corresponds
 %       to a plot of one of the vertices in the linkage
-function update_leg_drawing(complete_vertex_coords, leg_params)
+function update_leg_drawing(complete_vertex_coords, leg_drawing, leg_params)
     %iterate through each link, and update corresponding link plot
-    leg_drawing = initialize_leg_drawing(leg_params);
     complete_vertex_coords = column_to_matrix(complete_vertex_coords);
 
     for linkage_index = 1:leg_params.num_linkages

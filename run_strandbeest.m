@@ -10,9 +10,11 @@ function run_strandbeest()
     ];
     
     leg_params = define_leg_parameters();
-    
-    for theta = 90
+    leg_drawing = initialize_leg_drawing(leg_params);
+
+    for theta = linspace(0, 2*pi, 100)
         vertex_roots = compute_coords(vertex_coords_guess, leg_params, theta);
-        update_leg_drawing(vertex_roots, leg_params)
+        update_leg_drawing(vertex_roots, leg_drawing, leg_params)
+        drawnow;
     end
 end
