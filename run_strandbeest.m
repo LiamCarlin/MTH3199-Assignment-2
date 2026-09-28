@@ -1,4 +1,5 @@
 function run_strandbeest()
+    close all
     vertex_coords_guess = [...
     [ 0; 50];... %vertex 1 guess
     [ -50; 0];... %vertex 2 guess
