@@ -22,7 +22,7 @@ function coord_errors = fixed_coord_error_func(vertex_coords, leg_params, theta)
     coord_errors = [x1 - x1_bar; y1 - y1_bar; x2 - x2_bar; y2 - y2_bar;];
     
 
-    if ~any(coord_errors)
-        disp('Coords are not constrained!')
-    end
+    % if ~any(coord_errors)
+    %     disp('Coords are not constrained!')
+    % end
 end
