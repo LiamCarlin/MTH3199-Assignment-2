@@ -31,7 +31,8 @@ function run_strandbeest()
     title('Strandbeast Linkage Animation (No Velocity Overlay)')
     xlabel("Ground (-)");
     ylabel("Air (-)");
-    axis([-120, 40, -100, 40]);
+    % axis equal
+    axis([-120, 40, -120, 40]);
 
     for i = 1:10
         for theta = linspace(0, 2*pi, 100)
