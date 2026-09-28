@@ -19,8 +19,13 @@ function run_strandbeest()
     [ -50; -100]... %vertex 7 guess
     ];
     
-    fig1 = figure(1);
+    fig1 = figure(1); hold on;
     set(fig1, 'units', 'pixels', 'position', [0 0 1440 1080]);
+    
+    foot_path = plot(NaN, NaN, 'b-', 'LineWidth', 1.5);
+    foot_x = [];
+    foot_y = [];
+
     leg_params = define_leg_parameters();
     leg_drawing = initialize_leg_drawing(leg_params);
     title('Strandbeast Linkage Animation (No Velocity Overlay)')
@@ -32,6 +37,10 @@ function run_strandbeest()
         for theta = linspace(0, 2*pi, 100)
             vertex_roots = compute_coords(vertex_coords_guess, leg_params, theta);
             update_leg_drawing(vertex_roots, leg_drawing, leg_params)
+            foot_x(end+1) = vertex_roots(13); 
+            foot_y(end+1) = vertex_roots(14); 
+
+            set(foot_path, 'XData', foot_x, 'YData', foot_y);
             drawnow;
         end
     end
