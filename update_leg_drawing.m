@@ -11,15 +11,16 @@
 function update_leg_drawing(complete_vertex_coords, leg_params)
     %iterate through each link, and update corresponding link plot
     leg_drawing = initialize_leg_drawing(leg_params);
+    complete_vertex_coords = column_to_matrix(complete_vertex_coords);
 
     for linkage_index = 1:leg_params.num_linkages
 
         %line_x and line_y should both be two element arrays containing
         %the x and y coordinates of the line segment describing the current link
-        line_x = [complete_vertex_coords(leg_params.link_to_vertex_list{linkage_index, 1}, 1); %the input to complete... gives us the the x position for the first vertex for the given link
-            complete_vertex_coords(leg_params.link_to_vertex_list{linkage_index, 2}, 1)]; % complete... then takes that as an index within its row=vertice,column = x vs y to compute out the coords
-        line_y = [complete_vertex_coords(leg_params.link_to_vertex_list{linkage_index, 1}, 2); 
-            complete_vertex_coords(leg_params.link_to_vertex_list{linkage_index, 2}, 2)];
+        line_x = [complete_vertex_coords(leg_params.link_to_vertex_list(linkage_index, 1), 1); %the input to complete... gives us the the x position for the first vertex for the given link
+            complete_vertex_coords(leg_params.link_to_vertex_list(linkage_index, 2), 1)]; % complete... then takes that as an index within its row=vertice,column = x vs y to compute out the coords
+        line_y = [complete_vertex_coords(leg_params.link_to_vertex_list(linkage_index, 1), 2); 
+            complete_vertex_coords(leg_params.link_to_vertex_list(linkage_index, 2), 2)];
 
         set(leg_drawing.linkages{linkage_index},'xdata',line_x,'ydata',line_y); 
     end
