@@ -1,4 +1,7 @@
 function plot_tip_velocities()
+    set(groot, 'defaultTextInterpreter', 'latex')
+    set(groot, 'defaultLegendInterpreter', 'latex')
+    set(groot, 'defaultAxesTickLabelInterpreter', 'latex')
     leg_params = define_leg_parameters();
     vertex_guess = [...
     [ 0; 50];... %vertex 1 guess
@@ -14,7 +17,7 @@ function plot_tip_velocities()
     implicit_tip_y = [];
     explicit_tip_x = [];
     explicit_tip_y = [];
-    theta = linspace(0 , 2*pi, 10);
+    theta = linspace(0 , 2*pi, 200);
     for thetai = theta
         coords = compute_coords(vertex_guess, leg_params, thetai);
         implicit_dVdtheta = implicit_compute_velocities(coords, leg_params, thetai);
@@ -24,20 +27,29 @@ function plot_tip_velocities()
         explicit_dVdtheta = explicit_compute_velocities(vertex_guess, leg_params, thetai);
         explicit_tip_x(end+1) = explicit_dVdtheta(end-1);
         explicit_tip_y(end+1) = explicit_dVdtheta(end);
-        
+       
     end
     figure; hold on;
-    plot(theta, implicit_tip_x, 'r--', linewidth=2, displayname='Implicit')
-    plot(theta, explicit_tip_x, 'b', linewidth=1, displayname='Explicit')
-    title('Leg Tip X Velocity, Implicit v. Explicit')
-    xlabel('Theta (rad)'); ylabel('Velocity (in/rad)') %unsure about units
-    legend()
+    plot(theta, explicit_tip_x, 'b-', linewidth=1, ...
+        displayname='Method 2: Finite Differences')
+    plot(theta, implicit_tip_x, 'r--', linewidth=2, ...
+        displayname='Method 1: Linear Algebra')
+    title('$\frac{d x_{\mathrm{tip}}}{d\theta}$: Linear Algebra vs. Finite Differences')
+    xlabel('$\theta\;(\mathrm{rad})$')
+    ylabel('$\frac{d x_{\mathrm{tip}}}{d\theta}\;(-)$')
+    legend('Location', 'best')
+    exportgraphics(gcf, 'tip_x_derivative_comparison.png', 'Resolution', 300)
 
     figure; hold on
-    plot(theta, implicit_tip_y, 'r--', linewidth=2, displayname='Implicit')
-    plot(theta, explicit_tip_y, 'b', linewidth=1, displayname='Explicit')
-    title('Leg Tip Y Velocity, Implicit v. Explicit')
-    legend()
+    plot(theta, explicit_tip_y, 'b-', linewidth=1, ...
+        displayname='Method 2: Finite Differences')
+    plot(theta, implicit_tip_y, 'r--', linewidth=2, ...
+        displayname='Method 1: Linear Algebra')
+    title('$\frac{d y_{\mathrm{tip}}}{d\theta}$: Linear Algebra vs. Finite Differences')
+    xlabel('$\theta\;(\mathrm{rad})$')
+    ylabel('$\frac{d y_{\mathrm{tip}}}{d\theta}\;(-)$')
+    legend('Location', 'best')
+    exportgraphics(gcf, 'tip_y_derivative_comparison.png', 'Resolution', 300)
 
 
 end

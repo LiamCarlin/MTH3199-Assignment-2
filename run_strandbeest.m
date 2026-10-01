@@ -28,21 +28,39 @@ function run_strandbeest()
 
     leg_params = define_leg_parameters();
     leg_drawing = initialize_leg_drawing(leg_params);
-    title('Strandbeast Linkage Animation (No Velocity Overlay)')
-    xlabel("Ground (-)");
-    ylabel("Air (-)");
-    % axis equal
-    axis([-120, 40, -120, 40]);
+
+    velocity_scale = 0.5;
+    tip_velocity = quiver(NaN, NaN, NaN, NaN, 0, 'Color', 'm', 'LineWidth', 2, 'MaxHeadSize', 0.8, 'DisplayName', 'Leg-tip velocity');
+    legend([foot_path, tip_velocity], {'Leg-tip path', 'Leg-tip velocity'}, 'Location', 'southwest')
+
+    title('Strandbeest Linkage: Leg-Tip Path and Velocity')
+    xlabel('$x\;(-)$')
+    ylabel('$y\;(-)$')
+    axis equal
+    axis([-120, 40, -120, 40])
+
+    video = VideoWriter('strandbeest_animation.mp4', 'MPEG-4');
+    video.FrameRate = 30;
+    video.Quality = 100;
+    open(video)
 
     for i = 1:10
         for theta = linspace(0, 2*pi, 100)
             vertex_roots = compute_coords(vertex_coords_guess, leg_params, theta);
             update_leg_drawing(vertex_roots, leg_drawing, leg_params)
-            foot_x(end+1) = vertex_roots(13); 
-            foot_y(end+1) = vertex_roots(14); 
+            
+            dVdtheta = implicit_compute_velocities(vertex_roots, leg_params, theta);
 
+            set(tip_velocity,'XData', vertex_roots(13), 'YData', vertex_roots(14), 'UData', velocity_scale * dVdtheta(13), 'VData', velocity_scale * dVdtheta(14));
+
+            if i == 1
+                foot_x(end+1) = vertex_roots(13);
+                foot_y(end+1) = vertex_roots(14);
+            end
             set(foot_path, 'XData', foot_x, 'YData', foot_y);
             drawnow;
+            writeVideo(video, getframe(fig1))
         end
     end
+    close(video)
 end
